@@ -1,0 +1,45 @@
+# This is a weird way of telling Travis to use the fast container-based test
+# runner instead of the slow VM-based runner.
+sudo: false
+
+language: go
+
+os:
+  - linux
+  - osx
+
+# Only the last two Go releases are supported by the Go team with security
+# updates. Any older versions be considered deprecated. Don't bother testing
+# with them.
+go:
+  - 1.12.x
+  - 1.11.x
+
+# Only clone the most recent commit.
+git:
+  depth: 1
+
+env:
+  - GO111MODULE=on
+
+install: true
+
+# Don't email me the results of the test runs.
+notifications:
+  email:
+    recipients:
+      - radju22@gmail.com
+    on_success: never # default: change
+    on_failure: always # default: always
+
+before_install:
+  - go get -t ./...
+
+before_script:
+  - make build
+
+script:
+  - make test
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash) -t da790e26-a82f-4aa6-bb80-4f24baa44cf5
