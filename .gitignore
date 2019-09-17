@@ -1,14 +1,11 @@
 .vscode
 /debug
-/leprechaun
-/lepretools
 /vendor
 /var
 /coverprofile
-/tests/etc/leprechaun/recipes/schedule.lock
 /**/coverage.txt
-/tests/var/run/leprechaun/.pid
 .DS_Store
 /tests/var/log
 /tests/etc/
 Dockerfile
+dongl

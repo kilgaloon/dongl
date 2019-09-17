@@ -36,7 +36,7 @@ test:
 	RUN_MODE=test go test -race ./config -coverprofile=./config/coverage.txt -covermode=atomic -v 
 	RUN_MODE=test go test -race ./api -coverprofile=./api/coverage.txt -covermode=atomic -v
 	RUN_MODE=test go test -race ./agent -coverprofile=./agent/coverage.txt -covermode=atomic -v
-	RUN_MODE=test go test -race ./daemon -coverprofile=./daemon/coverage.txt -v
+	RUN_MODE=test go test -race ./daemon -coverprofile=./daemon/coverage.txt -covermode=atomic -v
 
 test-with-report:
 	go vet ./cmd/dongl
@@ -53,3 +53,6 @@ test-with-report:
 	go tool cover -html=coverprofile/agent.out -o coverprofile/agent.html
 	RUN_MODE=test go test -race ./daemon -coverprofile coverprofile/daemon.out
 	go tool cover -html=coverprofile/daemon.out -o coverprofile/daemon.html
+
+debug:
+	./dongl --pid=./tests/var/run/dongl/.pid --ini=./tests/configs/config_regular.ini --debug=true

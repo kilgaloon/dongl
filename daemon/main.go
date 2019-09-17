@@ -144,14 +144,17 @@ func init() {
 	}
 
 	cmd := flag.String("cmd", "info", "Shows basic information about daemon")
-	flag.Parse()
+	// https://golang.org/doc/go1.13#testing
+	if os.Getenv("RUN_MODE") != "test" {
+		flag.Parse()
+	}
 
 	d := new(Daemon)
 	f, err := os.OpenFile(*pidPath, os.O_RDWR|os.O_CREATE, 0644)
 	d.PidFile = f
 	d.pidPath = *pidPath
 	if err != nil {
-		log.Fatal("First you need to start daemon")
+		panic(err)
 	}
 
 	if pid == 0 {
