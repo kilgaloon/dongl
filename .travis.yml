@@ -42,4 +42,4 @@ script:
   - make test
 
 after_success:
-  - bash <(curl -s https://codecov.io/bash) -t da790e26-a82f-4aa6-bb80-4f24baa44cf5
+  - bash <(curl -s https://codecov.io/bash) -t 547a974c-3e8e-4743-b8fa-86ca09a1f4c6
