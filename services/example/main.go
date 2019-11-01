@@ -8,8 +8,7 @@ import (
 	"github.com/kilgaloon/dongl/agent"
 	"github.com/kilgaloon/dongl/api"
 	"github.com/kilgaloon/dongl/daemon"
-
-	"github.com/kilgaloon/dongl/config"
+	"github.com/spf13/viper"
 )
 
 // Client settings and configurations
@@ -19,12 +18,14 @@ type Client struct {
 }
 
 // New create client as a service
-func (client *Client) New(name string, cfg config.AgentConfig, debug bool) daemon.Service {
+func (client *Client) New(name string, cfg *viper.Viper, debug bool) daemon.Service {
 	a := agent.New(name, cfg, debug)
 	c := &Client{
 		name,
 		a,
 	}
+
+	c.RegisterPlugin(Worker{})
 
 	return c
 }

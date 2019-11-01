@@ -7,7 +7,9 @@ import (
 
 func main() {
 	// add your services
-	daemon.Srv.AddService(&example.Client{Name: "example_client"})
+	srv := daemon.Init()
+	
+	srv.AddService(&example.Client{Name: "example_client"})
 
-	daemon.Srv.Run()
+	srv.Run()
 }

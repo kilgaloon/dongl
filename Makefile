@@ -29,11 +29,9 @@ test-package:
 
 test:
 	go vet ./cmd/dongl
-	cd config && go vet
 	cd agent && go vet
 	cd api && go vet
 	cd daemon && go vet
-	RUN_MODE=test go test -race ./config -coverprofile=./config/coverage.txt -covermode=atomic -v 
 	RUN_MODE=test go test -race ./api -coverprofile=./api/coverage.txt -covermode=atomic -v
 	RUN_MODE=test go test -race ./agent -coverprofile=./agent/coverage.txt -covermode=atomic -v
 	RUN_MODE=test go test -race ./daemon -coverprofile=./daemon/coverage.txt -covermode=atomic -v
@@ -45,8 +43,6 @@ test-with-report:
 	cd api && go vet
 	cd daemon && go vet
 	mkdir -p coverprofile
-	RUN_MODE=test go test -race ./config -coverprofile coverprofile/config.out
-	go tool cover -html=coverprofile/config.out -o coverprofile/config.html
 	RUN_MODE=test go test -race ./api -coverprofile coverprofile/api.out
 	go tool cover -html=coverprofile/api.out -o coverprofile/api.html
 	RUN_MODE=test go test -race ./agent -coverprofile coverprofile/agent.out
@@ -55,4 +51,4 @@ test-with-report:
 	go tool cover -html=coverprofile/daemon.out -o coverprofile/daemon.html
 
 debug:
-	./dongl --pid=./tests/var/run/dongl/.pid --ini=./tests/configs/config_regular.ini --debug=true
+	go run cmd/dongl/main.go --pid=tests/var/run/dongl/.pid --cfg=tests/configs --debug=true

@@ -1,6 +1,7 @@
 package daemon
 
 import (
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -8,12 +9,11 @@ import (
 	"time"
 
 	"github.com/kilgaloon/dongl/api"
-	"github.com/kilgaloon/dongl/config"
+	"github.com/spf13/viper"
 )
 
 var (
-	configs            = config.NewConfigs()
-	ConfigWithSettings = configs.New("test", "../tests/configs/config_regular.ini")
+	Srv = Init()
 )
 
 type fakeService struct {
@@ -42,20 +42,27 @@ func (fs *fakeService) Status() string {
 	return "Testing"
 }
 
-func (fs *fakeService) Config() config.AgentConfig {
-	return ConfigWithSettings
+func (fs *fakeService) Config() *viper.Viper {
+	viper.SetConfigName("config")
+	viper.AddConfigPath("../tests/configs")
+	err := viper.ReadInConfig() // Find and read the config file
+	if err != nil {             // Handle errors reading the config file
+		log.Fatalf("Fatal error config file: %s \n", err)
+	}
+
+	return viper.GetViper()
 }
 
 func (fs *fakeService) IsDebug() bool {
 	return true
 }
 
-func (fs *fakeService) SetStatus(s string)         {}
+func (fs *fakeService) SetStatus(s string)      {}
 func (fs *fakeService) Start()                  {}
 func (fs *fakeService) Stop()                   {}
 func (fs *fakeService) Pause()                  {}
 func (fs *fakeService) SetPipeline(chan string) {}
-func (fs *fakeService) New(name string, cfg config.AgentConfig, debug bool) Service {
+func (fs *fakeService) New(name string, cfg *viper.Viper, debug bool) Service {
 	srv := &fakeService{}
 	return srv
 }

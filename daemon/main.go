@@ -8,7 +8,7 @@ import (
 	"strconv"
 
 	"github.com/kilgaloon/dongl/api"
-	"github.com/kilgaloon/dongl/config"
+	"github.com/spf13/viper"
 )
 
 // Daemon is long living process that serves as middleware
@@ -18,16 +18,13 @@ type Daemon struct {
 	pidPath      string
 	PidFile      *os.File
 	services     map[string]Service
-	Configs      *config.Configs
+	Config       *viper.Viper
 	configPath   string
 	Cmd          api.Cmd
 	Debug        bool
 	API          *api.API
 	shutdownChan chan bool
 }
-
-// Srv is long living process that manages other clients
-var Srv *Daemon
 
 // PID gets current PID of client
 func (d *Daemon) PID() int {
@@ -56,8 +53,21 @@ func (d *Daemon) PidPath() string {
 
 // AddService push agent as a service to list of services
 func (d *Daemon) AddService(s Service) {
+	var cfg *viper.Viper
+
 	name := s.RName()
-	cfg := d.Configs.New(name, d.ConfigPath())
+
+	viper.SetConfigName(name)
+	viper.AddConfigPath(d.configPath)
+	err := viper.ReadInConfig()
+	// if there is error reading specific file for service load global config
+	// otherwise read specific config file for service
+	if err != nil {            
+		cfg = d.Config
+	} else {
+		cfg = viper.GetViper()
+	}
+
 	a := s.New(name, cfg, d.Debug)
 
 	d.API.Register(a)
@@ -115,13 +125,15 @@ func (d *Daemon) Kill() {
 	d.shutdownChan <- true
 }
 
-func init() {
+// Init -ialize dameon
+func Init() *Daemon {
 	var configPath, pidPath *string
 	var debug *bool
 	var pid int
 
+	d := new(Daemon)
 	if api.IsAPIRunning() {
-		resp := Srv.GetInfo()
+		resp := d.GetInfo()
 
 		configPath = &resp.ConfigPath
 		pidPath = &resp.PidPath
@@ -130,14 +142,14 @@ func init() {
 	} else {
 		if os.Getenv("RUN_MODE") == "test" {
 			pp := "../tests/var/run/dongl/.pid"
-			cp := "../tests/configs/config_regular.ini"
+			cp := "../tests/configs"
 			dbg := true
 
 			pidPath = &pp
 			configPath = &cp
 			debug = &dbg
 		} else {
-			configPath = flag.String("ini", "/etc/dongl/config.ini", "Path to .ini configuration")
+			configPath = flag.String("cfg", "/etc/dongl", "Path to .ini configuration")
 			pidPath = flag.String("pid", "/var/run/dongl/.pid", "PID file of process")
 			debug = flag.Bool("debug", false, "Debug mode")
 		}
@@ -149,7 +161,6 @@ func init() {
 		flag.Parse()
 	}
 
-	d := new(Daemon)
 	f, err := os.OpenFile(*pidPath, os.O_RDWR|os.O_CREATE, 0644)
 	d.PidFile = f
 	d.pidPath = *pidPath
@@ -166,13 +177,21 @@ func init() {
 		}
 	}
 
-	d.services = make(map[string]Service)
+	viper.SetConfigName("config")
+	viper.AddConfigPath(*configPath)
+	err = viper.ReadInConfig() // Find and read the config file
+	if err != nil {            // Handle errors reading the config file
+		log.Fatalf("Fatal error config file: %s \n", err)
+	}
+
 	d.configPath = *configPath
-	d.Configs = config.NewConfigs()
+	d.Config = viper.GetViper()
+
+	d.services = make(map[string]Service)
 	d.Debug = *debug
 	d.Cmd = api.Cmd(*cmd)
 	d.API = api.New()
 	d.shutdownChan = make(chan bool, 1)
 
-	Srv = d
+	return d
 }

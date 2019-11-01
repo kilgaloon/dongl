@@ -2,7 +2,7 @@ package daemon
 
 import (
 	"github.com/kilgaloon/dongl/api"
-	"github.com/kilgaloon/dongl/config"
+	"github.com/spf13/viper"
 )
 
 // StartStop defines service that can be started and stoped
@@ -16,8 +16,8 @@ type Service interface {
 	api.Registrator
 	Status() string
 	SetStatus(s string)
-	Config() config.AgentConfig
+	Config() *viper.Viper
 	StartStop
 	IsDebug() bool
-	New(name string, cfg config.AgentConfig, debug bool) Service
+	New(name string, cfg *viper.Viper, debug bool) Service
 }
