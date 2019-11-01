@@ -19,13 +19,12 @@ type Agent interface {
 
 // Default represents default agent
 type Default struct {
-	Name    string
-	config  *viper.Viper
-	Stdin   io.Reader
-	Stdout  io.Writer
-	Debug   bool
-	status  string
-	plugins map[string]Plugin
+	Name   string
+	config *viper.Viper
+	Stdin  io.Reader
+	Stdout io.Writer
+	Debug  bool
+	status string
 
 	*sync.RWMutex
 }
@@ -63,16 +62,6 @@ func (d *Default) Status() string {
 	return d.status
 }
 
-// RegisterPlugin registers plugin and assing it to default agent
-func (d *Default) RegisterPlugin(p Plugin) {
-	d.plugins[p.Name()] = p.Bootstrap()
-}
-
-// Plugin returns registered plugin
-func (d *Default) Plugin(n string) Plugin {
-	return d.plugins[n]
-}
-
 // DefaultAPIHandles to be used in socket communication
 // If you want to takeover default commands from agent
 // call DefaultCommands from Agent which is same command
@@ -91,7 +80,6 @@ func New(name string, cfg *viper.Viper, debug bool) *Default {
 	agent.Stdin = os.Stdin
 	agent.Stdout = os.Stdout
 	agent.Debug = debug
-	agent.plugins = make(map[string]Plugin)
 
 	return agent
 }

@@ -9,3 +9,4 @@
 /tests/etc/
 Dockerfile
 dongl
+tests/var/run/dongl/.pid

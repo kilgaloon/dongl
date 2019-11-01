@@ -25,8 +25,6 @@ func (client *Client) New(name string, cfg *viper.Viper, debug bool) daemon.Serv
 		a,
 	}
 
-	c.RegisterPlugin(Worker{})
-
 	return c
 }
 
@@ -38,11 +36,14 @@ func (client Client) RName() string {
 // Start client
 func (client *Client) Start() {
 	client.SetStatus("Started")
-	fmt.Print("I Started!")
+	fmt.Println("I Started!")
+
+	worker := Worker{}
+	worker.Start()
 	go func() {
 		for {
 			if client.Status() == "Stopped" {
-				fmt.Print("I Stopped!")
+				fmt.Println("I Stopped!")
 				break
 			} else {
 				fmt.Print("tick...")
