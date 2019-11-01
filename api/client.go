@@ -45,21 +45,12 @@ func (c Cmd) Args() []string {
 
 const (
 	host = "http://localhost:11401"
-
-	infoEndpoint        = "/{agent}/info"
-	workersListEndpoint = "/{agent}/workers/list"
-	workersKillEndpoint = "/{agent}/workers/kill"
 )
 
 var (
 	table = tablewriter.NewWriter(os.Stdout)
 	// HTTPClient config
-	HTTPClient  = &http.Client{Timeout: 30 * time.Second}
-	processCmds = map[string]string{
-		"start": "/{agent}/start",
-		"stop":  "/{agent}/stop",
-		"pause": "/{agent}/pause",
-	}
+	HTTPClient = &http.Client{Timeout: 30 * time.Second}
 )
 
 // Resolver has job to resolve which enpoint to ping and return information
