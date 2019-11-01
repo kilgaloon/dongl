@@ -6,10 +6,12 @@ import (
 )
 
 func main() {
-	// add your services
+	// init daemon
 	srv := daemon.Init()
-	
+
+	// Add your services to daemon
 	srv.AddService(&example.Client{Name: "example_client"})
 
+	// run daemon
 	srv.Run()
 }
