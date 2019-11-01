@@ -2,19 +2,15 @@ export GO111MODULE=on
 
 install:
 	mkdir /etc/dongl
-	cp dist/configs/config.ini /etc/dongl
+	cp dist/configs/config.yml /etc/dongl
 	mkdir /var/run/dongl/
 	mkdir /var/log/dongl/
 	touch /var/log/dongl/error.log
-	go install ./cmd/dongl
 
 uninstall:
 	rm -rf /etc/dongl
 	rm -rf /var/log/dongl
 	rm -rf /var/run/dongl
-
-build:
-	go build ./cmd/dongl
 
 rebuild:
 	go clean
@@ -28,7 +24,6 @@ test-package:
 	go tool cover -html=coverprofile/${package}.out -o coverprofile/${package}.html
 
 test:
-	go vet ./cmd/dongl
 	cd agent && go vet
 	cd api && go vet
 	cd daemon && go vet
@@ -37,7 +32,6 @@ test:
 	RUN_MODE=test go test -race ./daemon -coverprofile=./daemon/coverage.txt -covermode=atomic -v
 
 test-with-report:
-	go vet ./cmd/dongl
 	cd config && go vet
 	cd agent && go vet
 	cd api && go vet
@@ -51,4 +45,4 @@ test-with-report:
 	go tool cover -html=coverprofile/daemon.out -o coverprofile/daemon.html
 
 debug:
-	go run cmd/dongl/main.go --pid=tests/var/run/dongl/.pid --cfg=tests/configs --debug=true
+	go run cmd/example/main.go --pid=tests/var/run/dongl/.pid --cfg=tests/configs --debug=true

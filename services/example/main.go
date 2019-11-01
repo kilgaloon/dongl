@@ -2,6 +2,7 @@ package example
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
@@ -49,7 +50,7 @@ func (client *Client) Start() {
 				fmt.Print("tick...")
 			}
 
-			time.Sleep(time.Second * 1)
+			time.Sleep(time.Second * 5)
 		}
 	}()
 }

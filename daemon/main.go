@@ -2,6 +2,7 @@ package daemon
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -62,7 +63,7 @@ func (d *Daemon) AddService(s Service) {
 	err := viper.ReadInConfig()
 	// if there is error reading specific file for service load global config
 	// otherwise read specific config file for service
-	if err != nil {            
+	if err != nil {
 		cfg = d.Config
 	} else {
 		cfg = viper.GetViper()
@@ -77,6 +78,7 @@ func (d *Daemon) AddService(s Service) {
 
 // Run starts daemon and long living process
 func (d *Daemon) Run() {
+
 	if api.IsAPIRunning() {
 		// more commands can/will be used here
 
@@ -92,8 +94,6 @@ func (d *Daemon) Run() {
 			for _, s := range d.services {
 				log.Printf("Starting service %s", s.RName())
 				go s.Start()
-
-				break
 			}
 
 			d.API.RegisterHandle("info", d.daemonInfo)

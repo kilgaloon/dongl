@@ -35,9 +35,6 @@ notifications:
 before_install:
   - go get -t ./...
 
-before_script:
-  - make build
-
 script:
   - make test
 
