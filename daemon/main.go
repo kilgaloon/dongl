@@ -161,7 +161,7 @@ func Init() *Daemon {
 		flag.Parse()
 	}
 
-	f, err := os.OpenFile(*pidPath, os.O_RDWR|os.O_CREATE, 0644)
+	f, err := os.OpenFile(*pidPath, os.O_RDWR|os.O_CREATE, 0666)
 	d.PidFile = f
 	d.pidPath = *pidPath
 	if err != nil {
